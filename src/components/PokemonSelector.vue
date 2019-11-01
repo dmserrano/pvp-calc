@@ -1,9 +1,11 @@
 <template>
     <div>
         <v-select
+            label="speciesName"
+            inputId="pokemon-selector"
             placeholder="Enter Pokemon name or number"
             :filterBy="handleFilterBy"
-            label="speciesName"
+            :selectOnTab="true"
             :options="allPokemon"
             :value="selectedValue"
             @input="handleOnChange"

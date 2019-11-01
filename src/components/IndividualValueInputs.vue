@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="form-group mr-2 flex-grow-1">
+        <div class="form-group mb-0 mr-2 flex-grow-1">
             <input
                 class="form-control"
                 max="15"
@@ -13,7 +13,7 @@
             />
         </div>
 
-        <div class="form-group mr-2 flex-grow-1">
+        <div class="form-group mb-0 mr-2 flex-grow-1">
             <input
                 class="form-control"
                 max="15"
@@ -26,7 +26,7 @@
             />
         </div>
 
-        <div class="form-group flex-grow-1">
+        <div class="form-group mb-0 flex-grow-1">
             <input
                 class="form-control"
                 max="15"

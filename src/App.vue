@@ -1,21 +1,38 @@
 <template>
     <div>
         <nav class="navbar navbar-light bg-light">
-            <span class="navbar-brand mb-0 h1">Navbar</span>
+            <span class="navbar-brand mb-0 h1">PVP Complete</span>
         </nav>
 
         <div class="container-fluid">
-            <h4 class="my-4">PVP Calculation</h4>
+            <h4 class="my-4">Enter Stats</h4>
 
             <div class="row">
-                <div class="col-lg-4 col-md-6 col-sm-6">
-                    <PokemonSelector
-                        class="mb-4"
-                        :addSelectedPokemon="addSelectedPokemon"
-                        :allPokemon="allPokemon"
-                        :selectedValue="selectedPokemon"
-                        :setSelectedPokemon="setSelectedPokemon"
-                    />
+                <div
+                    class="col-xl-4 col-lg-6 col-md-6 col-sm-6"
+                    v-on:keyup.enter="getPokemonStats"
+                >
+                    <div class="d-flex mb-4">
+                        <PokemonSelector
+                            class="mr-2 w-75"
+                            :addSelectedPokemon="addSelectedPokemon"
+                            :allPokemon="allPokemon"
+                            :selectedValue="selectedPokemon"
+                            :setSelectedPokemon="setSelectedPokemon"
+                        />
+
+                        <div class="form-group w-25 mb-0">
+                            <input
+                                class="form-control"
+                                max="40"
+                                min="0"
+                                placeholder="Level"
+                                type="number"
+                                :value="selectedLevel"
+                                @input="({ target }) => selectedLevel = target.value"
+                            />
+                        </div>
+                    </div>
 
                     <IndividualValueInputs
                         class="d-flex mb-4"
@@ -23,14 +40,25 @@
                         :setSelectedIvValues="setSelectedIvValues"
                     />
 
-                    <LeagueRankingSection
-                        :selectedPokemonRank="selectedPokemonRank"
-                        :selectedPokemonRankData="selectedPokemonRankData"
-                        v-if="selectedPokemon"
-                    />
+                    <div class="mb-4">
+                        <button
+                            class="btn btn-primary"
+                            :disabled="isCalculateStatsDisabled"
+                            @click="getPokemonStats"
+                        >
+                            {{
+                                isFetchingStats ? "Loading..." : "Calculate"
+                            }}
+                        </button>
+                    </div>
 
-                    <!-- TODO: display a message or not? -->
-                    <!-- <h4 v-else>This Pokemon is not ranked</h4> -->
+                    <hr>
+
+                    <LeagueRankingSection
+                        :allRankings="allRankings"
+                        :selectedPokemonStats="selectedPokemonStats"
+                        v-if="selectedPokemonStats"
+                    />
                 </div>
             </div>
         </div>
@@ -38,8 +66,12 @@
 </template>
 
 <script>
-import { findIndex } from "lodash";
-import { getAllPokemon, getRankings } from "@/api";
+import {
+    getAllPokemon,
+    getEvolutionChain,
+    getIvSpreads,
+    getRankings
+} from "@/api";
 
 import IndividualValueInputs from "@/components/IndividualValueInputs";
 import LeagueRankingSection from "@/components/LeagueRankingSection";
@@ -59,48 +91,56 @@ export default {
             allPokemon: [],
             allRankings: [],
             allSelectedPokemon: [],
+            isFetchingStats: false,
             selectedIvValues: {
                 attack: "",
                 defense: "",
                 hp: ""
             },
-            // selectedPokemon: null
-            // TODO: undo after dev
-            selectedPokemon: {"dex":334,"speciesName":"Altaria","speciesId":"altaria","baseStats":{"atk":141,"def":201,"hp":181},"types":["dragon","flying"],"fastMoves":["DRAGON_BREATH","PECK"],"chargedMoves":["DAZZLING_GLEAM","DRAGON_PULSE","SKY_ATTACK"],"defaultIVs":{"cp1500":[28.5,2,14,12],"cp2500":[40,15,15,15]}}
+            selectedLevel: "",
+            selectedPokemon: null,
+            selectedPokemonStats: null
         };
     },
 
     computed: {
-        selectedPokemonRankData() {
-            if (!this.selectedPokemon) return;
-
-            const rankMatch = this.allRankings.find(
-                ({ speciesName }) => speciesName === this.selectedPokemon.speciesName);
-
-            return rankMatch ? rankMatch : null;
+        ivsString() {
+            const { attack, defense, hp } = this.selectedIvValues;
+            return `${attack}/${defense}/${hp}`;
         },
 
-        selectedPokemonRank() {
-            if (!this.selectedPokemonRankData) return;
-
-            const match = { rating: this.selectedPokemonRankData.rating };
-            return findIndex(this.allRankings, match) + 1;
+        isCalculateStatsDisabled() {
+            const { attack, defense, hp } = this.selectedIvValues;
+            return this.isFetchingStats || !this.selectedPokemon || !attack || !defense || !hp;
         }
     },
 
     async created() {
-        const [ allPokemon, allRankings ] = await Promise.all([
-            getAllPokemon(),
-            getRankings()
-        ]);
-
+        const allPokemon = await getAllPokemon();
         this.allPokemon = allPokemon;
-        this.allRankings = allRankings;
     },
 
     methods: {
         addSelectedPokemon(selectedValue) {
             this.allSelectedPokemon.push(selectedValue);
+        },
+
+        async getPokemonStats(event) {
+            if (this.isCalculateStatsDisabled) return;
+            if (event && event.target && event.target.name === "pokemon-selector") return;
+
+            const { dex, speciesId } = this.selectedPokemon;
+            this.isFetchingStats = true;
+
+            const [ rankings, evolutionList ] = await Promise.all([
+                getRankings(),
+                getEvolutionChain(dex),
+            ]);
+            const ivSpreads = await getIvSpreads(speciesId, evolutionList, this.ivsString, this.selectedLevel);
+
+            this.allRankings = rankings;
+            this.isFetchingStats = false;
+            this.selectedPokemonStats = ivSpreads;
         },
 
         setSelectedIvValues({ target }) {
@@ -114,6 +154,3 @@ export default {
     }
 };
 </script>
-
-<style>
-</style>

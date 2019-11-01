@@ -1,37 +1,40 @@
 <template>
     <div>
-        <div class="d-flex align-items-end mb-4">
-            <h4 class="mb-0 mr-2">Ranking</h4>
+        <h4 class="">Stats</h4>
 
+        <!-- TODO: move to about stats section -->
+        <!-- <div class="d-flex align-items-end mb-4">
             <small class="small">
                 (Using data from
                 <a
                     target="_blank"
-                    href="https://pvpoke.com/rankings/all/1500/overall/altaria/">
+                    href="https://pvpoke.com/rankings">
                     PvPoke.com's Ranking
                 </a> tool)
             </small>
-        </div>
+        </div> -->
 
-        <h5>
-            Great League Rank: {{ leagueRankText }}
-        </h5>
-
-
+        <PokemonStatCard
+            v-for="(stats, name) in selectedPokemonStats"
+            :allRankings="allRankings"
+            :key="name"
+            :name="name"
+            :stats="stats"
+        />
     </div>
 </template>
 
 <script>
+import PokemonStatCard from "./PokemonStatCard";
+
 export default {
-    props: {
-        selectedPokemonRank: { type: Number, default: 0 },
-        selectedPokemonRankData: { type: Object, default: () => ({}) }
+    components: {
+        PokemonStatCard
     },
 
-    computed: {
-        leagueRankText() {
-            return this.selectedPokemonRank ? `#${this.selectedPokemonRank}` : "Not ranked";
-        }
-    }
+    props: {
+        allRankings: { type: Array, required: true },
+        selectedPokemonStats: { type: Object, required: true }
+    },
 };
 </script>
