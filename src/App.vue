@@ -5,11 +5,11 @@
         </nav>
 
         <div class="container-fluid">
-            <h4 class="my-4">Enter Stats</h4>
+            <h4 class="my-4 text-center">Enter Stats</h4>
 
-            <div class="row">
+            <div class="d-flex">
                 <div
-                    class="col-xl-4 col-lg-6 col-md-6 col-sm-6"
+                    class="w-50 m-auto"
                     v-on:keyup.enter="getPokemonStats"
                 >
                     <div class="d-flex mb-4">

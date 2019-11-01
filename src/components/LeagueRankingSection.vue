@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h4 class="">Stats</h4>
+        <h4>Stats</h4>
 
         <!-- TODO: move to about stats section -->
         <!-- <div class="d-flex align-items-end mb-4">

@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-select
-            label="speciesName"
+            :getOptionLabel="({ dex, speciesName }) => `#${dex} ${speciesName}`"
             inputId="pokemon-selector"
             placeholder="Enter Pokemon name or number"
             :filterBy="handleFilterBy"

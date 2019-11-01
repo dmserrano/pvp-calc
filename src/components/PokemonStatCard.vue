@@ -73,6 +73,7 @@ export default {
         stats: { type: Object, default: () => ({} )}
     },
 
+    // TODO: add computed for getting the pokemon from the "allPokemon" array
     computed: {
         leagueRankText() {
             return this.selectedPokemonRank
