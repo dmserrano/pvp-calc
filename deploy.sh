@@ -6,16 +6,7 @@ set -e
 # build
 npm run build
 
-# navigate into the build output directory
-cd docs
-
-# if you are deploying to a custom domain
-# echo 'www.example.com' > CNAME
-
-git init
 git add -A
 git commit -m "Deploy"
 
-git push -f git@github.com:dmserrano/pvp-calc.git master:gh-pages
-
-cd -
+git push origin master
