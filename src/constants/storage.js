@@ -1,0 +1,3 @@
+export const ALL_POKEMON = "ALL_POKEMON";
+export const ALL_RANKINGS = "ALL_RANKINGS";
+export const LAST_VISITED_DATE = "LAST_VISITED_DATE";
