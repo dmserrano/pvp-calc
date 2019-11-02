@@ -1,5 +1,9 @@
 import Swal from "sweetalert2";
-const BASE_URL = "http://localhost:4000/api/v1";
+
+const { NODE_ENV, VUE_APP_PRODUCTION_API_URL, VUE_APP_DEVELOPMENT_API_URL } = process.env;
+
+const BASE_URL = NODE_ENV === "production"
+    ? VUE_APP_PRODUCTION_API_URL : VUE_APP_DEVELOPMENT_API_URL;
 
 const rootOptions = {
     headers: {
