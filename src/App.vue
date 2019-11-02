@@ -72,10 +72,12 @@ import {
     getIvSpreads,
     getRankings
 } from "@/api";
+import { checkVisitationToken } from "@/services/storage";
 
 import IndividualValueInputs from "@/components/IndividualValueInputs";
 import LeagueRankingSection from "@/components/LeagueRankingSection";
 import PokemonSelector from "@/components/PokemonSelector";
+
 
 export default {
     name: "App",
@@ -116,13 +118,23 @@ export default {
     },
 
     async created() {
-        const allPokemon = await getAllPokemon();
-        this.allPokemon = allPokemon;
+        checkVisitationToken();
+        this.getOnLoadData();
     },
 
     methods: {
         addSelectedPokemon(selectedValue) {
             this.allSelectedPokemon.push(selectedValue);
+        },
+
+        async getOnLoadData() {
+            const [ allPokemon, allRankings ] = await Promise.all([
+                getAllPokemon(),
+                getRankings(),
+            ]);
+
+            this.allPokemon = allPokemon;
+            this.allRankings = allRankings;
         },
 
         async getPokemonStats(event) {
@@ -132,13 +144,9 @@ export default {
             const { dex, speciesId } = this.selectedPokemon;
             this.isFetchingStats = true;
 
-            const [ rankings, evolutionList ] = await Promise.all([
-                getRankings(),
-                getEvolutionChain(dex),
-            ]);
+            const evolutionList = await getEvolutionChain(dex);
             const ivSpreads = await getIvSpreads(speciesId, evolutionList, this.ivsString, this.selectedLevel);
 
-            this.allRankings = rankings;
             this.isFetchingStats = false;
             this.selectedPokemonStats = ivSpreads;
         },

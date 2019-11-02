@@ -42,6 +42,7 @@
 </template>
 
 <script>
+// TODO: add front end validation for values greater than 15
 export default {
     props: {
         selectedIvValues: { type: Object },
