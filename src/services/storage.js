@@ -2,6 +2,7 @@ import moment from "moment";
 import { LAST_VISITED_DATE } from "@/constants/storage";
 
 const localStorage = window.localStorage;
+const { VUE_APP_LAST_VISITED_DATE_DURATION } = process.env;
 
 export const getStorageValue = key => {
     const value = localStorage.getItem(key);
@@ -29,7 +30,7 @@ export const checkVisitationToken = () => {
 
     const visitationDifference = moment().diff(lastVisitedDate, "hours");
 
-    if (visitationDifference >= 24) {
+    if (visitationDifference >= VUE_APP_LAST_VISITED_DATE_DURATION) {
         clearStorage();
     }
 };
