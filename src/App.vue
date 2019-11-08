@@ -1,21 +1,22 @@
 <template>
-    <div>
+    <div id="app">
         <nav class="navbar navbar-light bg-light">
             <span class="navbar-brand mb-0 h1">PVP Complete</span>
         </nav>
 
         <div class="container-fluid">
-            <h4 class="my-4 text-center">Enter Stats</h4>
 
-            <div class="d-flex">
+            <div class="row">
                 <div
-                    class="w-50 m-auto"
+                    class="col-xl-4 col-md-6 m-auto"
                     v-on:keyup.enter="getPokemonStats"
                 >
+                    <h4 class="my-4 text-center">Enter Stats</h4>
+
                     <div class="d-flex mb-4">
                         <PokemonSelector
                             class="mr-2 w-75"
-                            :addSelectedPokemon="addSelectedPokemon"
+                            :addSavedResult="addSavedResult"
                             :allPokemon="allPokemon"
                             :selectedValue="selectedPokemon"
                             :setSelectedPokemon="setSelectedPokemon"
@@ -55,11 +56,20 @@
                     <hr>
 
                     <LeagueRankingSection
+                        :addSavedResult="addSavedResult"
                         :allRankings="allRankings"
+                        :selectedPokemon="selectedPokemon"
+                        :selectedPokemonIvs="ivsString"
                         :selectedPokemonStats="selectedPokemonStats"
                         v-if="selectedPokemonStats"
                     />
                 </div>
+
+                <SavedResultsTable
+                    class="col-xl-8 col-md-6"
+                    :savedResults="savedResults"
+                    v-if="savedResults.length"
+                />
             </div>
         </div>
     </div>
@@ -77,7 +87,13 @@ import { checkVisitationToken } from "@/services/storage";
 import IndividualValueInputs from "@/components/IndividualValueInputs";
 import LeagueRankingSection from "@/components/LeagueRankingSection";
 import PokemonSelector from "@/components/PokemonSelector";
+import SavedResultsTable from "@/components/SavedResultsTable";
 
+const defaultIvValues = {
+    attack: "",
+    defense: "",
+    hp: ""
+};
 
 export default {
     name: "App",
@@ -85,20 +101,17 @@ export default {
     components: {
         IndividualValueInputs,
         LeagueRankingSection,
-        PokemonSelector
+        PokemonSelector,
+        SavedResultsTable
     },
 
     data() {
         return {
             allPokemon: [],
             allRankings: [],
-            allSelectedPokemon: [],
             isFetchingStats: false,
-            selectedIvValues: {
-                attack: "",
-                defense: "",
-                hp: ""
-            },
+            savedResults: [],
+            selectedIvValues: defaultIvValues,
             selectedLevel: "",
             selectedPokemon: null,
             selectedPokemonStats: null
@@ -123,8 +136,16 @@ export default {
     },
 
     methods: {
-        addSelectedPokemon(selectedValue) {
-            this.allSelectedPokemon.push(selectedValue);
+        addSavedResult(result) {
+            this.savedResults.push(result);
+            this.clearSelectedValues();
+        },
+
+        clearSelectedValues() {
+            this.selectedIvValues = { ...defaultIvValues };
+            this.selectedLevel = "";
+            this.selectedPokemon = null;
+            this.selectedPokemonStats = null;
         },
 
         async getOnLoadData() {
@@ -162,3 +183,9 @@ export default {
     }
 };
 </script>
+
+<style>
+html, body, #app {
+    height: 100%;
+}
+</style>
