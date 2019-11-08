@@ -1,5 +1,7 @@
 import Vue from "vue";
 import vSelect from "vue-select";
+import { ClientTable } from "vue-tables-2";
+
 import App from "./App.vue";
 
 // 3rd party vendors
@@ -11,6 +13,8 @@ Vue.config.productionTip = false;
 
 // Register components
 Vue.component("v-select", vSelect);
+Vue.use(ClientTable);
+
 
 new Vue({
     render: h => h(App),

@@ -1,10 +1,19 @@
 <template>
     <div class="border-bottom p-2">
-        <div class="text-capitalize font-weight-bold">{{ name }}</div>
+        <div class="d-flex justify-content-between">
+            <div class="text-capitalize font-weight-bold">{{ name }}</div>
+
+            <button
+                class="btn btn-sm btn-primary"
+                @click="handleSaveResult"
+            >
+                Save Result
+            </button>
+        </div>
 
         <template v-if="stats">
             <!-- TODO: pass in the selected league here -->
-            <div>League Rank:
+            <div>Great League Rank:
                 <span class="font-weight-bold">{{ leagueRankText }}</span>
             </div>
 
@@ -65,11 +74,15 @@
 <script>
 import { findIndex } from "lodash";
 import numeral from "numeral";
+import Swal from "sweetalert2";
 
 export default {
     props: {
+        addSavedResult: { type: Function, required: true },
         allRankings: { type: Array, required: true },
         name: { type: String, required: true },
+        ivsString: { type: String, required: true },
+        selectedPokemonName: { type: String, required: true },
         stats: { type: Object, default: () => ({} )}
     },
 
@@ -78,6 +91,16 @@ export default {
         leagueRankText() {
             return this.selectedPokemonRank
                 ? `#${this.selectedPokemonRank}` : "Not ranked";
+        },
+
+        resultStats() {
+            return {
+                currentName: this.selectedPokemonName,
+                ivs: this.ivsString,
+                leagueRank: this.selectedPokemonRank,
+                resultName: this.name,
+                stats: this.stats
+            };
         },
 
         selectedPokemonRankData() {
@@ -100,6 +123,21 @@ export default {
         formatNumber(number) {
             return numeral(number).format("0,0");
         },
+
+        async handleSaveResult() {
+            const result = await Swal.fire({
+                title: "Are you sure?",
+                text: "After saving this result the other displayed results will be erased.",
+                type: "warning",
+                showCancelButton: true,
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Save"
+            });
+
+            if (result.value === "dismiss") return;
+
+            this.addSavedResult(this.resultStats);
+        }
     }
 };
 </script>

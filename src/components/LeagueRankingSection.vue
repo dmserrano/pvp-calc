@@ -16,9 +16,12 @@
 
         <PokemonStatCard
             v-for="(stats, name) in selectedPokemonStats"
+            :addSavedResult="addSavedResult"
             :allRankings="allRankings"
             :key="name"
+            :ivsString="selectedPokemonIvs"
             :name="name"
+            :selectedPokemonName="selectedPokemon.speciesId"
             :stats="stats"
         />
     </div>
@@ -33,8 +36,11 @@ export default {
     },
 
     props: {
+        addSavedResult: { type: Function, required: true },
         allRankings: { type: Array, required: true },
-        selectedPokemonStats: { type: Object, required: true }
+        selectedPokemon: { type: Object, required: true },
+        selectedPokemonIvs: { type: String, required: true },
+        selectedPokemonStats: { type: Object, required: true },
     },
 };
 </script>
