@@ -3,16 +3,14 @@ import { ALL_POKEMON, ALL_RANKINGS } from "@/constants/storage";
 import { getStorageValue, setStorageValue, storageAvailable } from "@/services/storage";
 
 export const getAllPokemon = async () => {
-    const allPokemonStorage = getStorageValue(ALL_POKEMON);
-
-    if (storageAvailable() && allPokemonStorage) {
-        return JSON.parse(allPokemonStorage);
+    if (storageAvailable() && getStorageValue(ALL_POKEMON)) {
+        return getStorageValue(ALL_POKEMON);
     }
 
     const response = await get("/all-pokemon");
     if (response.error) return [];
 
-    setStorageValue(ALL_POKEMON, JSON.stringify(response));
+    setStorageValue(ALL_POKEMON, response);
     return response;
 };
 
@@ -29,15 +27,13 @@ export const getIvSpreads = async (name, evolutionList, ivs, level) => {
 };
 
 export const getRankings = async () => {
-    const allRankingsStorage = getStorageValue(ALL_RANKINGS);
-
-    if (storageAvailable() && allRankingsStorage) {
-        return JSON.parse(allRankingsStorage);
+    if (storageAvailable() && getStorageValue(ALL_RANKINGS)) {
+        return getStorageValue(ALL_RANKINGS);
     }
 
     const response = await get("/rankings");
     if (response.error) return [];
 
-    setStorageValue(ALL_RANKINGS, JSON.stringify(response));
+    setStorageValue(ALL_RANKINGS, response);
     return response;
 };

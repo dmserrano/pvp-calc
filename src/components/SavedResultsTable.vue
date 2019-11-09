@@ -1,5 +1,19 @@
 <template>
     <div class="w-100" style="overflow-x: scroll">
+        <div class="d-flex">
+            <h4 class="my-4 mr-4">Saved Results</h4>
+
+            <div class="d-flex align-items-center">
+                <button
+                    class="btn btn-primary"
+                    @click="handleSaveResults"
+                    v-if="storageAvailable()"
+                >
+                    Save Results
+                </button>
+            </div>
+        </div>
+
         <v-client-table
             :columns="columns"
             :data="savedResults"
@@ -76,49 +90,93 @@
                 slot-scope="{ row: { stats: { costs } } }"
                 v-text="formatNumber(costs.stardust)"
             />
+
+            <textarea
+                slot="notes"
+                slot-scope="{ row }"
+                :value="row.notes"
+                @blur="event => handleUpdate(event, row)"
+            />
+
+            <div
+                slot="actions"
+                slot-scope="{ row }"
+            >
+                <button
+                    class="btn btn-danger"
+                    @click="() => removeSavedResult(row.id)"
+                    v-if="storageAvailable()"
+                >
+                    Remove
+                </button>
+            </div>
         </v-client-table>
     </div>
 </template>
 
 <script>
 import numeral from "numeral";
+import { saveResults, storageAvailable } from "@/services/storage";
 
-// TODO: move all column name to constants
+import {
+    ACTIONS,
+    CURRENT_NAME,
+    RESULT_NAME,
+    IVS,
+    LEAGUE_RANK,
+    TARGET_CP,
+    TARGET_LEVEL,
+    WILD_CATCH_RANK,
+    WEATHER_BOOSTED_RANK,
+    HATCHED_RANK,
+    CANDY_COST,
+    STARDUST_COST,
+    NOTES,
+} from "@/constants/resultsTableColumns";
+
 export default {
     props: {
-        savedResults: { type: Array, required: true }
+        savedResults: { type: Array, required: true },
+        removeSavedResult: { type: Function, required: true },
+        updateSavedResult: { type: Function, required: true }
     },
 
     data() {
         return {
             columns: [
-                "currentName",
-                "resultName",
-                "ivs",
-                "leagueRank",
-                "stats.targetCp",
-                "stats.targetLevel",
-                "stats.ranks.all",
-                "stats.ranks.weatherBoosted",
-                "stats.ranks.hatched",
-                "stats.costs.candy",
-                "stats.costs.stardust",
+                CURRENT_NAME,
+                RESULT_NAME,
+                IVS,
+                LEAGUE_RANK,
+                TARGET_CP,
+                TARGET_LEVEL,
+                WILD_CATCH_RANK,
+                WEATHER_BOOSTED_RANK,
+                HATCHED_RANK,
+                CANDY_COST,
+                STARDUST_COST,
+                NOTES,
+                ACTIONS,
             ],
 
             options: {
                 headings: {
-                    currentName: "Current Species",
-                    resultName: "Target Species",
-                    ivs: "IVs (ATK/DEF/HP)",
-                    leagueRank: "League Rank",
-                    "stats.targetCp": "Target CP",
-                    "stats.targetLevel": "Target Level",
-                    "stats.ranks.all": () => <span>Wild Catch <br />IV Spread</span>,
-                    "stats.ranks.weatherBoosted": () => <span>Weather Boosted<br />IV Spread</span>,
-                    "stats.ranks.hatched": () => <span>Hatched<br />IV Spread</span>,
-                    "stats.costs.candy": "Candy Upgrade Costs",
-                    "stats.costs.stardust": "Stardust Upgrade Costs",
+                    [CURRENT_NAME]: "Current Species",
+                    [RESULT_NAME]: "Target Species",
+                    [IVS]: "IVs (ATK/DEF/HP)",
+                    [LEAGUE_RANK]: "League Rank",
+                    [TARGET_CP]: "Target CP",
+                    [TARGET_LEVEL]: "Target Level",
+                    [WILD_CATCH_RANK]: "Wild Catch IV Spread",
+                    [WEATHER_BOOSTED_RANK]: "Weather Boosted IV Spread",
+                    [HATCHED_RANK]: "Hatched IV Spread",
+                    [CANDY_COST]: "Candy Upgrade Costs",
+                    [STARDUST_COST]: "Stardust Upgrade Costs",
+                    [NOTES]: "Notes",
+                    [ACTIONS]: ""
                 },
+
+                perPageValues: [ 25, 50, 100 ]
             }
         };
     },
@@ -127,6 +185,17 @@ export default {
         formatNumber(number) {
             return numeral(number).format("0,0");
         },
+
+        handleUpdate(event, row) {
+            const update = { ...row, notes: event.target.value };
+            this.updateSavedResult(update);
+        },
+
+        handleSaveResults() {
+            saveResults(this.savedResults);
+        },
+
+        storageAvailable
     }
 };
 </script>

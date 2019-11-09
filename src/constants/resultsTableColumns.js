@@ -1,0 +1,13 @@
+export const ACTIONS = "actions";
+export const CANDY_COST = "stats.costs.candy";
+export const CURRENT_NAME = "currentName";
+export const HATCHED_RANK = "stats.ranks.hatched";
+export const IVS = "ivs";
+export const LEAGUE_RANK = "leagueRank";
+export const NOTES = "notes";
+export const RESULT_NAME = "resultName";
+export const STARDUST_COST = "stats.costs.stardust";
+export const TARGET_CP = "stats.targetCp";
+export const TARGET_LEVEL = "stats.targetLevel";
+export const WEATHER_BOOSTED_RANK = "stats.ranks.weatherBoosted";
+export const WILD_CATCH_RANK = "stats.ranks.all";
