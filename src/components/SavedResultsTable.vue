@@ -119,10 +119,6 @@ export default {
                     "stats.costs.candy": "Candy Upgrade Costs",
                     "stats.costs.stardust": "Stardust Upgrade Costs",
                 },
-
-                sortable: [
-
-                ]
             }
         };
     },
