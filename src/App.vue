@@ -5,24 +5,23 @@
         </nav>
 
         <div class="container-fluid">
-
-            <div class="row">
+            <div class="row no-gutters">
                 <div
-                    class="col-xl-4 col-md-6 m-auto"
+                    class="col-xl-3 col-xl-3 col-md-6 border rounded p-4 mt-4 h-100"
                     v-on:keyup.enter="getPokemonStats"
                 >
-                    <h4 class="my-4 text-center">Enter Stats</h4>
+                    <h4 class="mb-4 text-center">Enter Stats</h4>
 
-                    <div class="d-flex mb-4">
+                    <div class="row">
                         <PokemonSelector
-                            class="mr-2 w-75"
+                            class="col-md-8 mb-4"
                             :addSavedResult="addSavedResult"
                             :allPokemon="allPokemon"
                             :selectedValue="selectedPokemon"
                             :setSelectedPokemon="setSelectedPokemon"
                         />
 
-                        <div class="form-group w-25 mb-0">
+                        <div class="form-group mb-4 col-md-4">
                             <input
                                 class="form-control"
                                 max="40"
@@ -52,22 +51,25 @@
                             }}
                         </button>
                     </div>
-
-                    <hr>
-
-                    <LeagueRankingSection
-                        :addSavedResult="addSavedResult"
-                        :allRankings="allRankings"
-                        :selectedPokemon="selectedPokemon"
-                        :selectedPokemonIvs="ivsString"
-                        :selectedPokemonStats="selectedPokemonStats"
-                        v-if="selectedPokemonStats"
-                    />
                 </div>
 
+                <LeagueRankingSection
+                    class="col-xl-9 col-lg-12 col-md-12 mt-4"
+                    :addSavedResult="addSavedResult"
+                    :allRankings="allRankings"
+                    :selectedPokemon="selectedPokemon"
+                    :selectedPokemonIvs="ivsString"
+                    :selectedPokemonStats="selectedPokemonStats"
+                    v-if="selectedPokemonStats"
+                />
+
+                <hr>
+
                 <SavedResultsTable
-                    class="col-xl-8 col-md-6"
+                    class="col-12"
+                    :removeSavedResult="removeSavedResult"
                     :savedResults="savedResults"
+                    :updateSavedResult="updateSavedResult"
                     v-if="savedResults.length"
                 />
             </div>
@@ -82,7 +84,7 @@ import {
     getIvSpreads,
     getRankings
 } from "@/api";
-import { checkVisitationToken } from "@/services/storage";
+import { checkVisitationToken, getSavedResults } from "@/services/storage";
 
 import IndividualValueInputs from "@/components/IndividualValueInputs";
 import LeagueRankingSection from "@/components/LeagueRankingSection";
@@ -141,6 +143,18 @@ export default {
             this.clearSelectedValues();
         },
 
+        removeSavedResult(id) {
+            this.savedResults = this.savedResults.filter(
+                result => result.id !== id ? result : false
+            );
+        },
+
+        updateSavedResult(update) {
+            this.savedResults = this.savedResults.map(
+                result => result.id === update.id ? update : result
+            );
+        },
+
         clearSelectedValues() {
             this.selectedIvValues = { ...defaultIvValues };
             this.selectedLevel = "";
@@ -156,6 +170,7 @@ export default {
 
             this.allPokemon = allPokemon;
             this.allRankings = allRankings;
+            this.savedResults = getSavedResults();
         },
 
         async getPokemonStats(event) {

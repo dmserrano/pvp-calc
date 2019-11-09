@@ -1,12 +1,13 @@
 import moment from "moment";
-import { LAST_VISITED_DATE } from "@/constants/storage";
+import Swal from "sweetalert2";
+import { LAST_VISITED_DATE, SAVED_RESULTS } from "@/constants/storage";
 
 const localStorage = window.localStorage;
 const { VUE_APP_LAST_VISITED_DATE_DURATION } = process.env;
 
 export const getStorageValue = key => {
     const value = localStorage.getItem(key);
-    return value ? value : null;
+    return value ? JSON.parse(value) : null;
 };
 
 export const removeStorageValue = key => {
@@ -14,7 +15,7 @@ export const removeStorageValue = key => {
 };
 
 export const setStorageValue = (key, value) => {
-    localStorage.setItem(key, value);
+    localStorage.setItem(key, JSON.stringify(value));
 };
 
 export const clearStorage = () => localStorage.clear();
@@ -33,6 +34,28 @@ export const checkVisitationToken = () => {
     if (visitationDifference >= VUE_APP_LAST_VISITED_DATE_DURATION) {
         clearStorage();
     }
+};
+
+export const getSavedResults = () => {
+    if (!storageAvailable()) return;
+
+    const savedResults = getStorageValue(SAVED_RESULTS);
+    return savedResults && Array.isArray(savedResults) ? savedResults : [];
+};
+
+export const saveResults = async results => {
+    const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Results will be saved to the browser's local storage. Clearing browsing data will delete the saved results.",
+        type: "warning",
+        showCancelButton: true,
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Save"
+    });
+
+    if (!result.value) return;
+
+    setStorageValue(SAVED_RESULTS, results);
 };
 
 // This function will determine if localStorage is available in the browser

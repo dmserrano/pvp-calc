@@ -1,7 +1,5 @@
 <template>
     <div>
-        <h4>Stats</h4>
-
         <!-- TODO: move to about stats section -->
         <!-- <div class="d-flex align-items-end mb-4">
             <small class="small">
@@ -14,16 +12,22 @@
             </small>
         </div> -->
 
-        <PokemonStatCard
-            v-for="(stats, name) in selectedPokemonStats"
-            :addSavedResult="addSavedResult"
-            :allRankings="allRankings"
-            :key="name"
-            :ivsString="selectedPokemonIvs"
-            :name="name"
-            :selectedPokemonName="selectedPokemon.speciesId"
-            :stats="stats"
-        />
+        <div
+            class="row no-gutters"
+            id="stat-card-container"
+        >
+            <PokemonStatCard
+                class="col-lg-4 col-md-4 col-sm-12"
+                v-for="(stats, name) in selectedPokemonStats"
+                :addSavedResult="addSavedResult"
+                :allRankings="allRankings"
+                :key="name"
+                :ivsString="selectedPokemonIvs"
+                :name="name"
+                :selectedPokemonName="selectedPokemon.speciesId"
+                :stats="stats"
+            />
+        </div>
     </div>
 </template>
 
@@ -44,3 +48,11 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+#stat-card-container {
+    flex-wrap: nowrap;
+    overflow-y: scroll;
+    width: 100%;
+}
+</style>
